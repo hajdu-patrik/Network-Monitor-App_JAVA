@@ -1,0 +1,49 @@
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ "main", "master", "feature" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Testing on Linux, Windows, and Mac
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+
+    steps:
+    # 1. Download code (v4 is the correct version!)
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 2. Set up Java environment (v4 is the correct version!)
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    # 3. Set up Gradle (v4 is the correct version!)
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+
+    # 4. Granting execution rights (Linux/Mac specific fix)
+    - name: Make gradlew executable
+      if: runner.os != 'Windows'
+      run: chmod +x ./gradlew
+
+    # 5. Compiling and assembling the main code
+    - name: Compile and Assemble Code
+      run: ./gradlew assemble
+
+    # 6. Test running with immediate failure on errors
+    - name: Run All Tests and Verify Quality
+      run: ./gradlew check
