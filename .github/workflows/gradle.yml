@@ -41,7 +41,6 @@ jobs:
 
     # 4. Granting execution rights
     - name: Make gradlew executable
-      if: runner.os != 'Windows'
       run: chmod +x ./gradlew
 
     # 5. Compiling and assembling the main code
