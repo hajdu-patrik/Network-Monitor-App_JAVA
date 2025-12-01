@@ -59,3 +59,4 @@ public class ApplicationFrame extends JFrame {
         }
     }
 }
+// Főablak - CardLayout vagy TabbedPane a két módhoz

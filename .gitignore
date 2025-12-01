@@ -30,3 +30,7 @@ gamestate.dat
 # Rejection of non-README.md documentations
 *.pdf
 *.docx
+
+# Database files
+*.sql
+*.db
