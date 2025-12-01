@@ -5,7 +5,7 @@
 guava = "33.4.6-jre"
 junit-jupiter = "5.12.1"
 pcap4j = "1.8.2"
-mysql = "8.3.0"
+mssql = "12.6.1.jre11"
 slf4j = "2.0.12"
 
 [libraries]
@@ -13,5 +13,5 @@ guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 pcap4j-core = { module = "org.pcap4j:pcap4j-core", version.ref = "pcap4j" }
 pcap4j-packetfactory = { module = "org.pcap4j:pcap4j-packetfactory-static", version.ref = "pcap4j" }
-mysql-connector = { module = "com.mysql:mysql-connector-j", version.ref = "mysql" }
+mssql-jdbc = { module = "com.microsoft.sqlserver:mssql-jdbc", version.ref = "mssql" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }

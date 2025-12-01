@@ -11,7 +11,6 @@ repositories {
 dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)
-
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // This dependency is used by the application.
@@ -22,7 +21,7 @@ dependencies {
     implementation(libs.pcap4j.packetfactory)
 
     // MySQL Connector/J for database connectivity
-    implementation(libs.mysql.connector)
+    implementation(libs.mssql.jdbc)
 
     // SLF4J Simple Binding for logging
     implementation(libs.slf4j.simple)
