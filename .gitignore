@@ -1,7 +1,7 @@
 # Gradle files
 .gradle/
 build/
-/bin
+bin/
 
 # Exception: The Wrapper JAR MUST be checked in so that others do not have to install it
 !gradle/wrapper/gradle-wrapper.jar

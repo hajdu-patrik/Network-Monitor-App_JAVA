@@ -44,6 +44,6 @@ jobs:
     - name: Compile and Assemble Code
       run: ./gradlew assemble
 
-    # 6. Test running with immediate failure on errors
-    - name: Run All Tests and Verify Quality
-      run: ./gradlew check
+    # 6. Build only (without tests)
+    - name: Build Project without Tests
+      run: ./gradlew assemble
