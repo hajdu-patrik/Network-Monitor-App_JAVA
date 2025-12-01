@@ -19,6 +19,10 @@ jobs:
         # Testing on Linux, Windows, and Mac
         os: [ ubuntu-latest, windows-latest, macos-latest ]
 
+    defaults:
+      run:
+        shell: bash
+
     steps:
     # 1. Download code (v4 is the correct version!)
     - name: Checkout code
