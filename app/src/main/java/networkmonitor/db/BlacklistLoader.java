@@ -24,15 +24,19 @@ public class BlacklistLoader {
     private static final String SOURCE_URL = "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/gambling-porn/hosts";
     // SQL insert statement to add entries to the netmonitor table
     private static final String INSERT_SQL = "INSERT INTO dbo.netmonitor (ip_address, website_name) VALUES (?, ?)";
+    // Constant to avoid repeated extraction that needs to be edited in multiple places
+    private static final String NULL_IP = "0.0.0.0";
 
     /**
      * Populates the database with blocked IP addresses and their corresponding domain names.
      * @param limit The maximum number of entries to add to the database
+     * @param offset How many valid entries to skip from the beginning of the file.
      */
-    public void populateDatabase(int limit) {
+    public void populateDatabase(int limit, int offset) {
         Connection conn = null;
         PreparedStatement pstmt = null;
-        int count = 0;
+        int addedCount = 0;
+        int skippedCount = 0;
         Set<String> processedIps = new HashSet<>();
 
         try {
@@ -47,15 +51,28 @@ public class BlacklistLoader {
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
                 String line;
-                while ((line = reader.readLine()) != null && count < limit)
-                    if (processLine(line, pstmt, processedIps))
-                        count++;
+                while ((line = reader.readLine()) != null && addedCount < limit) {
+                    if (isValidLine(line)) {
+                        if (skippedCount < offset) {
+                            skippedCount++;
+                            continue;
+                        }
+
+                        if (processLine(line, pstmt, processedIps)) {
+                            addedCount++;
+                        }
+                    }
+                }
             }
 
-            LOGGER.info("Saving to database...");
-            pstmt.executeBatch(); // Send everything at once
-            conn.commit();
-            LOGGER.log(Level.INFO, "DONE! Uploaded {0} blocked IP addresses.", count);
+            if (addedCount > 0) {
+                LOGGER.info("Saving new entries to database...");
+                pstmt.executeBatch();
+                conn.commit();
+                LOGGER.log(Level.INFO, "SUCCESS! Skipped first {0}, uploaded next {1} entries.", new Object[]{offset, addedCount});
+            } else {
+                LOGGER.info("No new unique entries found to add.");
+            }
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error populating database", e);
@@ -67,21 +84,28 @@ public class BlacklistLoader {
     }
 
     /**
+     * Checks if a line looks like a valid blocklist entry (starts with 0.0.0.0).
+     */
+    private boolean isValidLine(String line) {
+        return line != null && line.startsWith(NULL_IP) && !line.equals("0.0.0.0 0.0.0.0");
+    }
+
+
+    /**
      * Processes a single line from the hosts file.
      * @return true if a new IP was successfully added to the batch, false otherwise.
      */
     private boolean processLine(String line, PreparedStatement pstmt, Set<String> processedIps) throws SQLException {
-        // The lines in the hosts file look like this: "0.0.0.0 pornoldal.com"
-        if (!line.startsWith("0.0.0.0")) {
+        // The lines in the hosts file look like this: "0.0.0.0 random.com"
+        if (!line.startsWith(NULL_IP))
             return false;
-        }
 
         String[] parts = line.split("\\s+");
         if (parts.length < 2)
             return false;
 
         String domain = parts[1];
-        if ("0.0.0.0".equals(domain))
+        if (NULL_IP.equals(domain))
             return false;
 
         try {
@@ -92,7 +116,7 @@ public class BlacklistLoader {
             if (!processedIps.contains(realIp)) {
                 pstmt.setString(1, realIp);
                 pstmt.setString(2, domain);
-                pstmt.addBatch(); // Add to batch
+                pstmt.addBatch();
                 
                 processedIps.add(realIp);
                 

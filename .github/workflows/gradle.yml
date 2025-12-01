@@ -35,15 +35,11 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
 
-    # 4. Granting execution rights (Linux/Mac specific fix)
+    # 4. Granting execution rights
     - name: Make gradlew executable
       if: runner.os != 'Windows'
       run: chmod +x ./gradlew
 
     # 5. Compiling and assembling the main code
     - name: Compile and Assemble Code
-      run: ./gradlew assemble
-
-    # 6. Build only (without tests)
-    - name: Build Project without Tests
       run: ./gradlew assemble
