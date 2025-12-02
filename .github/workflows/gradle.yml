@@ -45,4 +45,4 @@ jobs:
 
     # 5. Compiling and assembling the main code
     - name: Compile and Assemble Code
-      run: ./gradlew assemble
+      run: ./gradlew clean build
