@@ -8,6 +8,7 @@ public class ApplicationFrame extends JFrame {
     // Logger
     private static final Logger LOGGER = Logger.getLogger(ApplicationFrame.class.getName());
 
+
     /**
      * Constructs the main game window, initializes the frame properties,
      * sets up the views, and displays the main menu.
@@ -27,6 +28,8 @@ public class ApplicationFrame extends JFrame {
         setLocationRelativeTo(null);
 
         loadApplicationIcon();
+
+        loadMenu();
     }
 
     /**
@@ -58,5 +61,9 @@ public class ApplicationFrame extends JFrame {
             }
         }
     }
+
+    private void loadMenu() {
+        JPanel menuPanel = new JPanel();
+        JButton scanMode = new JButton("Scan mode");
+    }
 }
-// Főablak - CardLayout vagy TabbedPane a két módhoz

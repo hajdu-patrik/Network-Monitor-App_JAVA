@@ -16,6 +16,7 @@ public class BlacklistDao {
     // Database manager instance
     private final DatabaseManager dbManager;
 
+    
     /**
      * Constructor initializes the DatabaseManager instance.
      */
