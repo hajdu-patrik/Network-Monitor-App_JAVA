@@ -123,9 +123,12 @@ public class BlacklistLoader {
      */
     private boolean processAndBatch(String line, PreparedStatement pstmt, Set<String> currentBatchIps, Set<String> existingIps) throws SQLException {
         String[] parts = line.split("\\s+");
-        if (parts.length < 2) return false;
+        if (parts.length < 2)
+            return false;
+
         String domain = parts[1];
-        if (NULL_IP.equals(domain)) return false;
+        if (NULL_IP.equals(domain))
+            return false;
 
         try {
             InetAddress address = InetAddress.getByName(domain);

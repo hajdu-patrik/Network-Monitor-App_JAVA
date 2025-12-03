@@ -49,7 +49,7 @@ public class BlacklistFetching implements Runnable {
         loadManualList(loader, dao);
 
         // 3. Incremental load
-        loadIncrementalWebList(loader, dao, 230);
+        loadIncrementalWebList(loader, dao, 1110);
     }
 
     /**
@@ -58,6 +58,7 @@ public class BlacklistFetching implements Runnable {
      */
     private static void refreshCache(BlacklistDao dao) {
         blacklistCache = dao.loadAllEntries();
+        
         if (blacklistCache != null)
             LOGGER.log(Level.INFO, "Cache updated. Database size: {0}", blacklistCache.size());
     }
