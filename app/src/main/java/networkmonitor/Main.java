@@ -21,7 +21,7 @@ public class Main {
          * Start background data synchronization tasks in a separate thread
          * to prevents the GUI from freezing during network/database operations.
          */ 
-        Thread backgroundThread = new Thread(new BlacklistFetching());
-        backgroundThread.start();
+        //Thread backgroundThread = new Thread(new BlacklistFetching());
+        //backgroundThread.start();
     }
 }

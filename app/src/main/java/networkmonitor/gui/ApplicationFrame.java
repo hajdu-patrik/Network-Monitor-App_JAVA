@@ -20,8 +20,8 @@ public class ApplicationFrame extends JFrame {
 
     // View Identifiers
     private static final String VIEW_MENU = "Menu";
-    private static final String VIEW_MONITOR = "Monitor";
-    private static final String VIEW_IDS = "IDS";
+    private static final String VIEW_PACKET_MONITOR = "Packet mointoring";
+    private static final String VIEW_BLACKLIST_MONITOR = "Blacklist monitoring";
 
     // Theme Fonts
     public static final String SANS_SERIF_FONT = "SansSerif";
@@ -43,6 +43,7 @@ public class ApplicationFrame extends JFrame {
         toFront();
         requestFocus();
     }
+
 
     /**
      * Initializes the main JFrame properties.
@@ -100,39 +101,18 @@ public class ApplicationFrame extends JFrame {
     private void initViews() {
         // Create the Menu Panel with actions to switch views
         MainMenuPanel mainMenu = new MainMenuPanel(
-            e -> showView(VIEW_MONITOR),
-            e -> showView(VIEW_IDS)
+            e -> showView(VIEW_PACKET_MONITOR),
+            e -> showView(VIEW_BLACKLIST_MONITOR)
         );
 
         // Add views to the card layout
         cardPanel.add(mainMenu, VIEW_MENU);
-        
-        // Placeholders for other views (to be implemented with same style)
-        JPanel monitorPlaceholder = createPlaceholderPanel("Packet Monitoring Active");
-        JPanel idsPlaceholder = createPlaceholderPanel("Blacklist Monitoring Active");
-        
-        cardPanel.add(monitorPlaceholder, VIEW_MONITOR);
-        cardPanel.add(idsPlaceholder, VIEW_IDS);
-    }
 
-    private JPanel createPlaceholderPanel(String title) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(COLOR_BACKGROUND);
-        
-        JLabel label = new JLabel(title, SwingConstants.CENTER);
-        label.setForeground(COLOR_TEXT);
-        label.setFont(new Font(SANS_SERIF_FONT, Font.BOLD, 20));
-        
-        FlatButton backBtn = new FlatButton("Back to Menu");
-        backBtn.addActionListener(e -> showView(VIEW_MENU));
-        
-        JPanel btnPanel = new JPanel();
-        btnPanel.setBackground(COLOR_BACKGROUND);
-        btnPanel.add(backBtn);
+        PacketMonitorPanel packetMonitor = new PacketMonitorPanel(e -> showView(VIEW_MENU));
+        BlacklistMonitorPanel blacklistMonitorPanel = new BlacklistMonitorPanel();
 
-        panel.add(label, BorderLayout.CENTER);
-        panel.add(btnPanel, BorderLayout.SOUTH);
-        return panel;
+        cardPanel.add(packetMonitor, VIEW_PACKET_MONITOR);
+        cardPanel.add(blacklistMonitorPanel, VIEW_BLACKLIST_MONITOR);
     }
 
     /**
@@ -143,30 +123,54 @@ public class ApplicationFrame extends JFrame {
         cardLayout.show(cardPanel, viewName);
     }
 
-    /**
+
+/**
      * A custom styled button class for the dark theme.
+     * Supports custom colors and padding adjustments.
      */
     public static class FlatButton extends JButton {
+        private final int widthPadding;
+        private final int heightPadding;
+
+        // Default constructor: default colors, default padding
         public FlatButton(String text) {
+            this(text, COLOR_PRIMARY, COLOR_HOVER, 40, 45);
+        }
+
+        // Constructor with custom colors, default padding
+        public FlatButton(String text, Color primaryColor, Color hoverColor) {
+            this(text, primaryColor, hoverColor, 40, 45);
+        }
+
+        // Constructor with default colors, custom default padding
+        public FlatButton(String text, int widthPadding, int heightPadding) {
+            this(text, COLOR_PRIMARY, COLOR_HOVER, widthPadding, heightPadding);
+        }
+
+        // Full constructor with custom colors and custom padding
+        public FlatButton(String text, Color primaryColor, Color hoverColor, int widthPadding, int heightPadding) {
             super(text);
+            this.widthPadding = widthPadding;
+            this.heightPadding = heightPadding;
+
             setFont(new Font(SANS_SERIF_FONT, Font.BOLD, 16));
             setFocusPainted(false);
             setBorderPainted(false);
             setContentAreaFilled(false);
             setOpaque(true);
             setForeground(Color.WHITE);
-            setBackground(COLOR_PRIMARY);
+            setBackground(primaryColor);
             setCursor(new Cursor(Cursor.HAND_CURSOR));
             
-            // Add hover effect
+            // Add hover effect with custom colors
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    setBackground(COLOR_HOVER);
+                    setBackground(hoverColor);
                 }
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    setBackground(COLOR_PRIMARY);
+                    setBackground(primaryColor);
                 }
             });
         }
@@ -174,7 +178,8 @@ public class ApplicationFrame extends JFrame {
         @Override
         public Dimension getPreferredSize() {
             Dimension d = super.getPreferredSize();
-            return new Dimension(d.width + 40, 45); // Add padding and fix height
+
+            return new Dimension(d.width + widthPadding, heightPadding); 
         }
     }
 }
