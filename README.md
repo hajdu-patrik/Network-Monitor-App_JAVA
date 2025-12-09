@@ -21,7 +21,6 @@ The project features a modern **Java Swing GUI**, robust multi-threaded architec
 ---
 
 ## 🚀 Key Features
-
 ### 🛡️ Active Security (IPS)
 - **Real-time Threat Detection:** Automatically checks every outgoing packet's destination IP against a local blacklist database.
 - **Visual Alerting:** Malicious traffic is highlighted in **RED** in the monitoring dashboard.
@@ -58,7 +57,6 @@ The project features a modern **Java Swing GUI**, robust multi-threaded architec
 ---
 
 ## 📂 Project Structure
-
 The project follows a clean **Layered Architecture** to separate concerns:
 ```
 NetworkMonitor/
@@ -81,3 +79,29 @@ NetworkMonitor/
 └── build.gradle.kts
 ```
 
+---
+
+## 💻 Installation and Setup
+### Prerequisites
+1. **Java JDK 21** (or newer) installed and configured.
+2. **Npcap (Windows)** or **libpcap (Linux)** installed.
+    ⚠️ **CRITICAL FOR WINDOWS USERS**: When installing Npcap, you **MUST** check the box: **"Install Npcap in WinPcap API-compatible Mode"** Without this option, the application will fail to load the native packet capture libraries.
+
+### 1. Clone the Repository
+```Bash
+git clone https://github.com/yourusername/network-monitor-app.git
+cd network-monitor-app
+```
+
+### 2. Build the Project
+The project uses the Gradle Wrapper, so no manual Gradle installation is required.
+```Bash
+./gradlew build
+```
+
+### 3. Run the Application
+**Windows (PowerShell/CMD):**
+```Bash
+./gradlew run
+```
+*Note: Depending on your system security settings, you might need to run the terminal as Administrator to grant access to the network card.*
