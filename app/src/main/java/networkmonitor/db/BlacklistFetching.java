@@ -49,7 +49,7 @@ public class BlacklistFetching implements Runnable {
         loadManualList(loader, dao);
 
         // 3. Incremental load
-        loadIncrementalWebList(loader, dao, 5000);
+        loadIncrementalWebList(loader, dao, 5410);
     }
 
     /**

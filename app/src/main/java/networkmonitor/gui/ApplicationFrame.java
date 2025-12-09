@@ -20,7 +20,7 @@ public class ApplicationFrame extends JFrame {
 
     // View Identifiers
     private static final String VIEW_MENU = "Menu";
-    private static final String VIEW_PACKET_MONITOR = "Packet mointoring";
+    private static final String VIEW_PACKET_MONITOR = "Packet monitoring";
     private static final String VIEW_BLACKLIST_MONITOR = "Blacklist monitoring";
 
     // Theme Fonts

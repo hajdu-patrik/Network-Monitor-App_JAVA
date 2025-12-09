@@ -36,9 +36,7 @@ public class BlacklistEntry {
         this.websiteName = websiteName;
     }
 
-    /**
-     * Getters
-     */
+    // Getters
     public int getId() { return id; }
     public String getIpAddress() { return ipAddress; }
     public String getWebsiteName() { return websiteName; }

@@ -77,5 +77,10 @@ public class MainMenuPanel extends JPanel {
         blacklistMonitoringBtn.addActionListener(blacklistListener);
         layout.gridy = 3;
         add(blacklistMonitoringBtn, layout);
+
+        FlatButton exitBtn = new FlatButton("Close Application", Color.DARK_GRAY, Color.GRAY);
+        exitBtn.addActionListener(e -> System.exit(0));
+        layout.gridy = 4;
+        add(exitBtn, layout);
     }
 }
