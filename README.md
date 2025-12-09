@@ -14,7 +14,7 @@
 
 **Network Monitor Pro** is a sophisticated network analysis and security tool developed in **Java**. It goes beyond simple packet sniffing by integrating a proactive **Intrusion Prevention System (IPS)**.
 
-The application captures real-time network traffic using the **Pcap4J** library (wrapping Npcap/libpcap) and analyzes packets against a dynamically updated blacklist. When a connection to a malicious IP is detected, the system not only flags it visually but actively terminates the connection using **TCP Reset Injection**.
+The application captures real-time network traffic using the **Pcap4J** library (wrapping Npcap/libpcap) and analyzes packets against a dynamically updated blacklist. When a connection to a malicious IP is detected, the system flags it visually.
 
 The project features a modern **Java Swing GUI**, robust multi-threaded architecture, and persistent data storage using an embedded **H2 Database**.
 
@@ -24,7 +24,6 @@ The project features a modern **Java Swing GUI**, robust multi-threaded architec
 
 ### 🛡️ Active Security (IPS)
 - **Real-time Threat Detection:** Automatically checks every outgoing packet's destination IP against a local blacklist database.
-- **TCP Reset Injection:** If a match is found, the system constructs and injects a spoofed **TCP RST** packet to immediately sever the connection between the client and the malicious server.
 - **Visual Alerting:** Malicious traffic is highlighted in **RED** in the monitoring dashboard.
 
 ### 📡 Network Monitoring
@@ -81,3 +80,4 @@ NetworkMonitor/
 │ └── aptureService.java
 └── build.gradle.kts
 ```
+
