@@ -85,7 +85,7 @@ NetworkMonitor/
 ### Prerequisites
 1. **Java JDK 21** (or newer) installed and configured.
 2. **Npcap (Windows)** or **libpcap (Linux)** installed.
-    ⚠️ **CRITICAL FOR WINDOWS USERS**: When installing Npcap, you **MUST** check the box: **"Install Npcap in WinPcap API-compatible Mode"** Without this option, the application will fail to load the native packet capture libraries.
+   - **CRITICAL FOR WINDOWS USERS**: When installing Npcap, you **MUST** check the box: **"Install Npcap in WinPcap API-compatible Mode"** Without this option, the application will fail to load the native packet capture libraries.
 
 ### 1. Clone the Repository
 ```Bash
@@ -105,3 +105,4 @@ The project uses the Gradle Wrapper, so no manual Gradle installation is require
 ./gradlew run
 ```
 *Note: Depending on your system security settings, you might need to run the terminal as Administrator to grant access to the network card.*
+
