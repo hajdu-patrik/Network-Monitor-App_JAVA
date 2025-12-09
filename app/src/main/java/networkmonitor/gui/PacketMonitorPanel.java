@@ -208,12 +208,11 @@ public class PacketMonitorPanel extends JPanel {
      * This is used by the "Reset" button.
      */
     private void clearData() {
-        if (tableModel != null) {
+        if (tableModel != null)
             tableModel.setRowCount(0);
-        }
-        if (captureService != null) {
+
+        if (captureService != null)
             captureService.resetPacketCount();
-        }
     }
 
     /**
@@ -221,7 +220,8 @@ public class PacketMonitorPanel extends JPanel {
      * This is used when navigating back to the menu.
      */
     private void resetFullState() {
-        if (isCapturing) stopCapture();
+        if (isCapturing)
+            stopCapture();
         
         statusLabel.setText("Status: None");
         statusLabel.setForeground(Color.LIGHT_GRAY);

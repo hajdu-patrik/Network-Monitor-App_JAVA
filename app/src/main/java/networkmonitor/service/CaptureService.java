@@ -47,7 +47,8 @@ public class CaptureService {
      * Starts the packet capturing on a separate thread.
      */
     public void startCapturing() {
-        if (keepRunning) return; // Already running
+        if (keepRunning)
+            return; // Already running
         keepRunning = true;
 
         // Run capturing in a background thread to prevent freezing the GUI
