@@ -109,30 +109,40 @@ public class PacketMonitorPanel extends JPanel {
      * Initializes the packet table with model, renderers, and styles.
      */
     private void initTable() {
-        String[] columnNames = {"No.", "Time", "Source IP", "Destination IP", "Protocol", "Length", "Info"};
+        String[] columnNames = {"No.", "Time", "Source IP", "Destination IP", "Protocol", "Length", "Info", "Blocked"};
         
-        // 1. Model Definition with Types (For Correct Sorting)
         tableModel = new DefaultTableModel(columnNames, 0) {
+            /**
+             * Prevents cell editing in the table.
+             * @param row The row index.
+             * @param column The column index.
+             * @return false always to make cells non-editable.
+             */
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
 
+            /**
+             * Specifies the data type for each column to ensure proper sorting and rendering.
+             * @param columnIndex The index of the column.
+             * @return The Class type of the column.
+             */
             @Override
             public Class<?> getColumnClass(int columnIndex) {
                 if (columnIndex == 0 || columnIndex == 5) {
-                    return Integer.class; // No. and Length are numbers
+                    return Integer.class;
                 }
-                return String.class; // Others are text
+                if (columnIndex == 7) {
+                    return Boolean.class;
+                }
+                return String.class;
             }
         };
 
         packetTable = new JTable(tableModel);
-        
-        // 2. Enable Sorting
         packetTable.setAutoCreateRowSorter(true);
 
-        // 3. Visual Styling (Dark Theme Base)
         packetTable.setBackground(new Color(60, 63, 65));
         packetTable.setForeground(Color.WHITE);
         packetTable.setGridColor(new Color(100, 100, 100));
@@ -142,39 +152,30 @@ public class PacketMonitorPanel extends JPanel {
 
         JTableHeader header = packetTable.getTableHeader();
         header.setBackground(new Color(45, 45, 48));
-        header.setForeground(Color.WHITE);
+        header.setForeground(ApplicationFrame.COLOR_PRIMARY);
         header.setFont(new Font("SansSerif", Font.BOLD, 13));
-        header.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Color.WHITE));
+        header.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, ApplicationFrame.COLOR_PRIMARY));
 
-        // 4. Custom Renderer for Color Coding (TCP/UDP)
         packetTable.setDefaultRenderer(Object.class, new PacketTableCellRenderer());
-        packetTable.setDefaultRenderer(Integer.class, new PacketTableCellRenderer()); // Apply to Numbers too
+        packetTable.setDefaultRenderer(Integer.class, new PacketTableCellRenderer());
 
-        // 5. Column Width Optimization
         TableColumnModel columnModel = packetTable.getColumnModel();
-
-        // No. (ID) - Short
+        
         columnModel.getColumn(0).setPreferredWidth(50);
         columnModel.getColumn(0).setMaxWidth(80);
-
-        // Time - Medium
         columnModel.getColumn(1).setPreferredWidth(100);
         columnModel.getColumn(1).setMaxWidth(150);
-
-        // IPs - Medium
         columnModel.getColumn(2).setPreferredWidth(120);
         columnModel.getColumn(3).setPreferredWidth(120);
-
-        // Protocol - Short
         columnModel.getColumn(4).setPreferredWidth(60);
         columnModel.getColumn(4).setMaxWidth(80);
-
-        // Length - Short
         columnModel.getColumn(5).setPreferredWidth(60);
         columnModel.getColumn(5).setMaxWidth(80);
-
-        // Info - Long (Takes remaining space)
         columnModel.getColumn(6).setPreferredWidth(300);
+
+        columnModel.getColumn(7).setMinWidth(0);
+        columnModel.getColumn(7).setMaxWidth(0);
+        columnModel.getColumn(7).setWidth(0);
     }
 
     /**
@@ -234,7 +235,7 @@ public class PacketMonitorPanel extends JPanel {
      * @param packet The PacketInfo object containing packet details.
      */
     public void addPacketToTable(PacketInfo packet) {
-        SwingUtilities.invokeLater(() -> {
+         SwingUtilities.invokeLater(() -> {
             tableModel.addRow(new Object[]{
                 packet.getNumber(),
                 packet.getTimestamp(),
@@ -242,7 +243,8 @@ public class PacketMonitorPanel extends JPanel {
                 packet.getDestIp(),
                 packet.getProtocol(),
                 packet.getLength(),
-                packet.getInfo()
+                packet.getInfo(),
+                packet.isBlocked()
             });
             // Auto-scroll logic: only if user hasn't scrolled up
             // (Simpler version: always scroll to bottom)
@@ -254,39 +256,46 @@ public class PacketMonitorPanel extends JPanel {
      * Custom Cell Renderer to handle row coloring based on Protocol.
      */
     private static class PacketTableCellRenderer extends DefaultTableCellRenderer {
-        // Colors for protocols (Pale/Pastel versions for readability)
-        private static final Color COLOR_TCP_BG = new Color(225, 240, 255); // Pale Blue
-        private static final Color COLOR_TCP_FG = Color.BLACK;              // Text needs to be dark on pale bg
-        
-        private static final Color COLOR_UDP_BG = new Color(255, 255, 225); // Pale Yellow
+        private static final Color COLOR_TCP_BG = new Color(225, 240, 255);
+        private static final Color COLOR_TCP_FG = Color.BLACK;
+        private static final Color COLOR_UDP_BG = new Color(255, 255, 225);
         private static final Color COLOR_UDP_FG = Color.BLACK;
-
-        private static final Color COLOR_DEFAULT_BG = new Color(60, 63, 65); // Dark Theme Default
+        private static final Color COLOR_DEFAULT_BG = new Color(60, 63, 65);
         private static final Color COLOR_DEFAULT_FG = Color.WHITE;
+        private static final Color COLOR_BLOCKED_BG = new Color(255, 102, 102);
+        private static final Color COLOR_BLOCKED_FG = Color.WHITE;
 
+        /**
+         * Overrides the default rendering to apply custom colors based on protocol type.
+         * @param table The JTable.
+         * @param value The cell value.
+         * @param isSelected Whether the cell is selected.
+         * @param hasFocus Whether the cell has focus.
+         * @param row The row index.
+         * @param column The column index.
+         * @return The component used for rendering the cell.
+         */
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-            // 1. Center align specific columns
-            if (column == 0 || column == 4 || column == 5) {
+            if (column == 0 || column == 4 || column == 5)
                 setHorizontalAlignment(SwingConstants.CENTER);
-            } else {
+            else
                 setHorizontalAlignment(SwingConstants.LEFT);
-            }
 
-            // 2. Handle Selection (Don't override selection color)
-            if (isSelected) {
-                // Keep default selection colors (usually blueish)
+            if (isSelected)
                 return c;
-            }
 
-            // 3. Get Protocol value to determine color
-            // IMPORTANT: We must convert view row index to model row index because of sorting!
             int modelRow = table.convertRowIndexToModel(row);
-            String protocol = (String) table.getModel().getValueAt(modelRow, 4); // Column 4 is Protocol
+            
+            Boolean isBlocked = (Boolean) table.getModel().getValueAt(modelRow, 7);
+            String protocol = (String) table.getModel().getValueAt(modelRow, 4);
 
-            if ("TCP".equalsIgnoreCase(protocol)) {
+            if (Boolean.TRUE.equals(isBlocked)) {
+                c.setBackground(COLOR_BLOCKED_BG);
+                c.setForeground(COLOR_BLOCKED_FG);
+            } else if ("TCP".equalsIgnoreCase(protocol)) {
                 c.setBackground(COLOR_TCP_BG);
                 c.setForeground(COLOR_TCP_FG);
             } else if ("UDP".equalsIgnoreCase(protocol)) {

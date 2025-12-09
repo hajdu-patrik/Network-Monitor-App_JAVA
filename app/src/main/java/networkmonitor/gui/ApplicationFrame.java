@@ -21,7 +21,6 @@ public class ApplicationFrame extends JFrame {
     // View Identifiers
     private static final String VIEW_MENU = "Menu";
     private static final String VIEW_PACKET_MONITOR = "Packet monitoring";
-    private static final String VIEW_BLACKLIST_MONITOR = "Blacklist monitoring";
 
     // Theme Fonts
     public static final String SANS_SERIF_FONT = "SansSerif";
@@ -101,18 +100,17 @@ public class ApplicationFrame extends JFrame {
     private void initViews() {
         // Create the Menu Panel with actions to switch views
         MainMenuPanel mainMenu = new MainMenuPanel(
-            e -> showView(VIEW_PACKET_MONITOR),
-            e -> showView(VIEW_BLACKLIST_MONITOR)
+            e -> showView(VIEW_PACKET_MONITOR)
         );
 
         // Add views to the card layout
         cardPanel.add(mainMenu, VIEW_MENU);
 
-        PacketMonitorPanel packetMonitor = new PacketMonitorPanel(e -> showView(VIEW_MENU));
-        BlacklistMonitorPanel blacklistMonitorPanel = new BlacklistMonitorPanel();
+        PacketMonitorPanel packetMonitor = new PacketMonitorPanel(
+            e -> showView(VIEW_MENU)
+        );
 
         cardPanel.add(packetMonitor, VIEW_PACKET_MONITOR);
-        cardPanel.add(blacklistMonitorPanel, VIEW_BLACKLIST_MONITOR);
     }
 
     /**
@@ -164,10 +162,19 @@ public class ApplicationFrame extends JFrame {
             
             // Add hover effect with custom colors
             addMouseListener(new MouseAdapter() {
+                /**
+                 * Changes to hover color when mouse enters.
+                 * @param e MouseEvent
+                 */
                 @Override
                 public void mouseEntered(MouseEvent e) {
                     setBackground(hoverColor);
                 }
+
+                /**
+                 * Reverts to primary color when mouse exits.
+                 * @param e MouseEvent
+                 */
                 @Override
                 public void mouseExited(MouseEvent e) {
                     setBackground(primaryColor);
@@ -175,6 +182,9 @@ public class ApplicationFrame extends JFrame {
             });
         }
         
+        /**
+         * Overrides the preferred size to include custom padding.
+         */
         @Override
         public Dimension getPreferredSize() {
             Dimension d = super.getPreferredSize();

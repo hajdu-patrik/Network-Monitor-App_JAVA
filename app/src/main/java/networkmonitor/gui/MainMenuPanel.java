@@ -21,16 +21,15 @@ public class MainMenuPanel extends JPanel {
     /**
      * Constructs the main menu panel.
      * @param packetListener Action to perform when Packet Monitoring is clicked.
-     * @param blacklistListener Action to perform when Blacklist Monitoring is clicked.
      */
-    public MainMenuPanel(ActionListener packetListener, ActionListener blacklistListener) {
-        initComponents(packetListener, blacklistListener);
+    public MainMenuPanel(ActionListener packetListener) {
+        initComponents(packetListener);
     }
 
     /**
      * Initializes components and layout.
      */
-    private void initComponents(ActionListener packetListener, ActionListener blacklistListener) {
+    private void initComponents(ActionListener packetListener) {
         // Set Panel Background
         setBackground(ApplicationFrame.COLOR_BACKGROUND);
         setLayout(new GridBagLayout());
@@ -68,19 +67,14 @@ public class MainMenuPanel extends JPanel {
         // Reset insets for buttons
         layout.insets = new Insets(15, 15, 15, 15);
 
-        FlatButton packetMonitoringBtn = new FlatButton("Packet Monitoring");
+        FlatButton packetMonitoringBtn = new FlatButton("Packet Capture");
         packetMonitoringBtn.addActionListener(packetListener);
         layout.gridy = 2;
         add(packetMonitoringBtn, layout);
 
-        FlatButton blacklistMonitoringBtn = new FlatButton("Blacklist Monitoring");
-        blacklistMonitoringBtn.addActionListener(blacklistListener);
-        layout.gridy = 3;
-        add(blacklistMonitoringBtn, layout);
-
         FlatButton exitBtn = new FlatButton("Close Application", Color.DARK_GRAY, Color.GRAY);
         exitBtn.addActionListener(e -> System.exit(0));
-        layout.gridy = 4;
+        layout.gridy = 3;
         add(exitBtn, layout);
     }
 }
