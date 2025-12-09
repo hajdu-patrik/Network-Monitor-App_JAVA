@@ -11,15 +11,24 @@ permissions:
 
 jobs:
   release:
-    name: Build and Publish Release
-    runs-on: ubuntu-latest
+    name: Build and Publish Release on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Testing on Linux, Windows, and Mac
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+
+    defaults:
+      run:
+        shell: bash
 
     steps:
     # 1. Download code
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 2. Set up Java environment (same as in CI)
+    # 2. Set up Java environment
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
@@ -39,7 +48,7 @@ jobs:
     - name: Build Distribution
       run: ./gradlew app:distZip
 
-    # 6. Extract version number from the tag (e.g., v1.0.0 -> 1.0.0)
+    # 6. Extract version number from the tag
     - name: Extract Version
       id: get_version
       run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
