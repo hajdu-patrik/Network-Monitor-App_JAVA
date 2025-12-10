@@ -85,6 +85,7 @@ NetworkMonitor/
 │ ├── icon.png
 │ └── simplelogger.properties
 |
+├── blacklist_state.properties
 └── build.gradle.kts
 ```
 
