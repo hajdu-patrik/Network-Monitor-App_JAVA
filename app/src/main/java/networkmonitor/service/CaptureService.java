@@ -18,26 +18,25 @@ import networkmonitor.db.BlacklistFetching;
 import networkmonitor.model.BlacklistEntry;
 
 /**
- * Service responsible for interacting with the Network Interface Card (NIC).
- * Handles packet capturing, parsing, and notifying listeners.
+ * Service class for capturing network packets using Pcap4J.
+ * Handles starting/stopping capture and processing packets.
  */
 public class CaptureService {
+    // Logger for debugging and information
     private static final Logger LOGGER = Logger.getLogger(CaptureService.class.getName());
+
+    // Pcap4J components
     private PcapHandle handle;
     private boolean keepRunning = false;
     private int packetCount = 0;
     
-    // Callback to send data back to GUI
-    // Nem final, mert cserélhető (GUI csatlakozik/lecsatlakozik)
+    // Listener for GUI updates
     private Consumer<PacketInfo> packetListener;
 
     /**
-     * Default constructor for background service.
-     * Listener is initially null.
+     * Default constructor.
      */
-    public CaptureService() {
-        // No InjectionService needed anymore!
-    }
+    public CaptureService() {}
 
     /**
      * Constructor for direct GUI usage (legacy).
@@ -64,7 +63,8 @@ public class CaptureService {
      * Starts the packet capturing process on a selected NIF.
      */
     public void startCapturing() {
-        if (keepRunning) return; 
+        if (keepRunning)
+            return; 
 
         keepRunning = true;
         new Thread(this::captureLoop).start();
@@ -116,7 +116,7 @@ public class CaptureService {
             int readTimeout = 10; 
             handle = nif.openLive(snapshotLength, PcapNetworkInterface.PromiscuousMode.PROMISCUOUS, readTimeout);
 
-            while (keepRunning && handle.isOpen())
+            while (keepRunning && handle.isOpen()) 
                 captureNextPacket();
 
         } catch (PcapNativeException e) {
@@ -145,9 +145,10 @@ public class CaptureService {
     }
 
     /**
-     * Processes a captured packet.
+     * Processes a captured packet, extracts relevant info, and notifies the listener.
+     * @param packet The captured Packet object
      */
-    @SuppressWarnings("null")
+    @SuppressWarnings("null") // Because of the dynamic packet structure
     private void processPacket(Packet packet) {
         IpV4Packet ipV4Packet = packet.get(IpV4Packet.class);
         if (ipV4Packet == null)

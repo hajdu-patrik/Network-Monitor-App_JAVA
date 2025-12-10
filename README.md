@@ -3,7 +3,7 @@
 ![Gradle](https://img.shields.io/badge/Build-Gradle-02303A?style=flat&logo=gradle&logoColor=white)
 ![Pcap4J](https://img.shields.io/badge/Network-Pcap4J-blue?style=flat&logo=network&logoColor=white)
 ![Npcap](https://img.shields.io/badge/Driver-Npcap_WinPcap-blue?style=flat&logo=windows&logoColor=white)
-![H2 Database](https://img.shields.io/badge/Database-H2_(Embedded)-yellow?style=flat&logo=database&logoColor=white)
+![MSSQL](https://img.shields.io/badge/Database-Microsoft_SQL_Server-CC2927?style=flat&logo=microsoft-sql-server&logoColor=white)
 ![Hibernate](https://img.shields.io/badge/ORM-Hibernate-59666C?style=flat&logo=hibernate&logoColor=white)
 ![Architecture](https://img.shields.io/badge/Pattern-Layered_%2F_Service-purple?style=flat)
 ![Status](https://img.shields.io/badge/Status-Educational-lightgrey?style=flat)
@@ -12,18 +12,19 @@
 
 ## 📋 Project Overview
 
-**Network Monitor Pro** is a sophisticated network analysis and security tool developed in **Java**. It goes beyond simple packet sniffing by integrating a proactive **Intrusion Prevention System (IPS)**.
+**Network Monitor Pro** is a sophisticated network analysis and security tool developed in **Java**. It combines deep packet inspection with a proactive **Intrusion Prevention System (IPS)** logic to identify potential threats.
 
-The application captures real-time network traffic using the **Pcap4J** library (wrapping Npcap/libpcap) and analyzes packets against a dynamically updated blacklist. When a connection to a malicious IP is detected, the system flags it visually.
+The application captures real-time network traffic using the **Pcap4J** library (wrapping Npcap/libpcap) and analyzes packets against a dynamically updated blacklist. When a connection to a malicious IP is detected, the system immediately flags it visually on the dashboard to alert the user.
 
-The project features a modern **Java Swing GUI**, robust multi-threaded architecture, and persistent data storage using an embedded **H2 Database**.
+The project features a modern **Java Swing GUI**, robust multi-threaded architecture, and enterprise-grade persistent data storage using **Microsoft SQL Server 2022** via Hibernate ORM.
 
 ---
 
 ## 🚀 Key Features
+
 ### 🛡️ Active Security (IPS)
 - **Real-time Threat Detection:** Automatically checks every outgoing packet's destination IP against a local blacklist database.
-- **Visual Alerting:** Malicious traffic is highlighted in **RED** in the monitoring dashboard.
+- **Visual Alerting:** Malicious traffic is instantly highlighted in **RED** in the monitoring dashboard for immediate visibility.
 
 ### 📡 Network Monitoring
 - **Deep Packet Inspection:** Captures and parses TCP, UDP, and IPv4 headers.
@@ -35,8 +36,9 @@ The project features a modern **Java Swing GUI**, robust multi-threaded architec
     - **Red:** Blocked/Malicious Traffic
 
 ### 💾 Data & Persistence
-- **H2 Database Engine:** Embedded SQL database stores over **12,000+** blacklisted IP addresses.
-- **Automatic Updates:** A background service fetches and updates the blacklist from reputable online sources (StevenBlack/hosts) on every startup.
+- **Microsoft SQL Server:** Enterprise-level database storing over **12,000+** blacklisted IP addresses.
+- **Automatic Updates:** A background service (`BlacklistFetching`) fetches and updates the blacklist from reputable online sources (StevenBlack/hosts) on every startup.
+- **State Persistence:** The application remembers the download progress of the blacklist file, ensuring efficient bandwidth usage and resuming updates seamlessly.
 - **Optimized Performance:** Uses in-memory caching for blacklist lookups to ensure zero latency during packet processing.
 
 ### 🖥️ UI/UX
@@ -50,8 +52,8 @@ The project features a modern **Java Swing GUI**, robust multi-threaded architec
 * **Language:** Java (JDK 21)
 * **Build System:** Gradle (Kotlin DSL)
 * **GUI Framework:** Java Swing (Custom Look & Feel)
-* **Network Lib:** Pcap4J (Packet Capture & Injection)
-* **Database:** H2 Database (File-based storage)
+* **Network Lib:** Pcap4J (Packet Capture)
+* **Database:** Microsoft SQL Server 2022
 * **ORM:** Hibernate (JPA) for entity management
 
 ---
@@ -60,7 +62,7 @@ The project features a modern **Java Swing GUI**, robust multi-threaded architec
 The project follows a clean **Layered Architecture** to separate concerns:
 ```
 NetworkMonitor/
-├── app/src/main/java/networkmonitor/
+├── networkmonitor/
 │ ├── Main.java
 │ ├── db/
 │ │ ├── BlacklistDao.java
@@ -73,9 +75,16 @@ NetworkMonitor/
 │ │ └── PacketMonitorPanel.java
 │ ├── model/
 │ │ ├── BlacklistEntry.java
-| │ └── PacketInfo.java
+│ │ └── PacketInfo.java
 │ └── service/
 │ └── aptureService.java
+|
+├── resources/
+│ ├── META-INF/
+│ │ └── persistence.xml
+│ ├── icon.png
+│ └── simplelogger.properties
+|
 └── build.gradle.kts
 ```
 
@@ -87,22 +96,29 @@ NetworkMonitor/
 2. **Npcap (Windows)** or **libpcap (Linux)** installed.
    - **CRITICAL FOR WINDOWS USERS**: When installing Npcap, you **MUST** check the box: **"Install Npcap in WinPcap API-compatible Mode"** Without this option, the application will fail to load the native packet capture libraries.
 
-### 1. Clone the Repository
+### 1. Database Setup
+Before running the application, ensure your local MSSQL instance is ready:
+* **Host:** `localhost:1433`
+* **Database Name:** `netmonitor`
+* **User:** `java_user`
+* **Password:** `netMonitor123.@`
+* *Note: Ensure TCP/IP is enabled in SQL Server Configuration Manager.*
+
+### 2. Clone the Repository
 ```Bash
 git clone https://github.com/yourusername/network-monitor-app.git
 cd network-monitor-app
 ```
 
-### 2. Build the Project
+### 3. Build the Project
 The project uses the Gradle Wrapper, so no manual Gradle installation is required.
 ```Bash
 ./gradlew build
 ```
 
-### 3. Run the Application
+### 4. Run the Application
 **Windows (PowerShell/CMD):**
 ```Bash
 ./gradlew run
 ```
 *Note: Depending on your system security settings, you might need to run the terminal as Administrator to grant access to the network card.*
-

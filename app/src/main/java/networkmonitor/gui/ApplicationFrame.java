@@ -4,6 +4,9 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
+
+import networkmonitor.service.CaptureService;
+
 import java.util.logging.Logger;
 
 /**
@@ -11,7 +14,7 @@ import java.util.logging.Logger;
  * Manages navigation between the Menu, Monitor, and IDS views using CardLayout.
  */
 public class ApplicationFrame extends JFrame {
-    // Logger
+    // Logger for debugging and information
     private static final Logger LOGGER = Logger.getLogger(ApplicationFrame.class.getName());
 
     // Layout Components
@@ -31,10 +34,16 @@ public class ApplicationFrame extends JFrame {
     public static final Color COLOR_PRIMARY = new Color(98, 0, 234);    // Deep Purple
     public static final Color COLOR_HOVER = new Color(124, 77, 255);    // Light Purple
 
+    // Global CaptureService instance for packet capturing
+    private final transient CaptureService globalCaptureService;
+
     /**
      * Constructs the main window, initializes frame properties, and sets up views.
      */
     public ApplicationFrame() {
+        this.globalCaptureService = new CaptureService();
+        this.globalCaptureService.startCapturing();
+
         initMainFrame();
         initViews();
         showView(VIEW_MENU);
@@ -43,7 +52,6 @@ public class ApplicationFrame extends JFrame {
         requestFocus();
     }
 
-
     /**
      * Initializes the main JFrame properties.
      */
@@ -51,7 +59,7 @@ public class ApplicationFrame extends JFrame {
         setTitle("Network Monitor Pro");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(900, 700);
-        setMinimumSize(new Dimension(800, 600));
+        setMinimumSize(new Dimension(900, 700));
         setLocationRelativeTo(null);
         getContentPane().setBackground(COLOR_BACKGROUND);
 
@@ -93,7 +101,6 @@ public class ApplicationFrame extends JFrame {
         }
     }
 
-
     /**
      * Initializes and adds all views (Menu, Monitor, IDS) to the CardLayout.
      */
@@ -106,8 +113,10 @@ public class ApplicationFrame extends JFrame {
         // Add views to the card layout
         cardPanel.add(mainMenu, VIEW_MENU);
 
+        // Create the Packet Monitor Panel with a back action
         PacketMonitorPanel packetMonitor = new PacketMonitorPanel(
-            e -> showView(VIEW_MENU)
+            e -> showView(VIEW_MENU),
+            globalCaptureService
         );
 
         cardPanel.add(packetMonitor, VIEW_PACKET_MONITOR);
@@ -122,11 +131,12 @@ public class ApplicationFrame extends JFrame {
     }
 
 
-/**
+    /**
      * A custom styled button class for the dark theme.
      * Supports custom colors and padding adjustments.
      */
     public static class FlatButton extends JButton {
+        // Size offsets for padding
         private final int widthPadding;
         private final int heightPadding;
 

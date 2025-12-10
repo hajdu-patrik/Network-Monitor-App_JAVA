@@ -5,6 +5,7 @@ package networkmonitor.model;
  * Uses the Builder Pattern to fix SonarLint S107 (Constructor has >7 parameters).
  */
 public class PacketInfo {
+    // Packet fields
     private final int number;
     private final String timestamp;
     private final String sourceIp;
@@ -40,6 +41,7 @@ public class PacketInfo {
      * Builder class to construct PacketInfo objects cleanly.
      */
     public static class Builder {
+        // Builder fields
         private int number;
         private String timestamp;
         private String sourceIp;

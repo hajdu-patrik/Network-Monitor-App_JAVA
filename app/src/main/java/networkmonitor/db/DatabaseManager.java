@@ -1,36 +1,53 @@
 package networkmonitor.db;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.util.logging.Logger;
 
-/**
- * Instructions to set up the SQL Server database for this application:
- * STEP 1: Download SQL Server Express Management Studio (SSMS) from Microsoft's official website.
- * STEP 2: Install SSMS by following the installation wizard.
- * STEP 3: Open SSMS and connect to your local SQL Server instance. (localhost\SQLEXPRESS, Windows Authentication, encryption optional)
- * STEP 4: Create a new database/required table/user with CreateDatabase.sql script.
- * STEP 5: Ensure that TCP/IP protocol is enabled for SQL Server in SQL Server Configuration Manager.
- * STEP 6: Make sure your firewall allows connections to SQL Server on port 1433.
- */
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import java.util.logging.Level;
 
-// Manages database connections
 public class DatabaseManager {
-    // The connection string to the SQL Server database
-    private static final String CONNECTION_URL = 
-        "jdbc:sqlserver://localhost:1433;" +
-        "databaseName=netmonitor;" +
-        "user=java_user;" +
-        "password=netMonitor123.@;" +
-        "encrypt=false;" + 
-        "trustServerCertificate=true;";
+    // EntityManagerFactory instance for managing database connections
+    private static final EntityManagerFactory emf;
+
+    // Logger for debugging and information
+    private static final Logger LOGGER = Logger.getLogger(DatabaseManager.class.getName());
+
 
     /**
-     * Creates and returns a new database connection.
-     * @return Connection object
-     * @throws SQLException if connection fails
+     * Private constructor to prevent instantiation.
      */
-    public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(CONNECTION_URL);
+    private DatabaseManager() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    /**
+     * Static initializer to set up the EntityManagerFactory.
+     * This uses the settings defined in persistence.xml.
+     */
+    static {
+        try {
+            emf = Persistence.createEntityManagerFactory("networkMonitorPU");
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Database Connection Failed (MSSQL): {0}", ex.getMessage());
+            throw new ExceptionInInitializerError(ex);
+        }
+    }
+
+    /**
+     * Get a new EntityManager instance.
+     * @return EntityManager instance
+     */
+    public static EntityManager getEntityManager() {
+        return emf.createEntityManager();
+    }
+
+    /**
+     * Close the EntityManagerFactory when the application shuts down.
+     */
+    public static void close() {
+        if (emf != null && emf.isOpen())
+            emf.close();
     }
 }

@@ -1,72 +1,78 @@
 package networkmonitor.db;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import networkmonitor.model.BlacklistEntry;
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Data Access Object for Blacklist operations.
- */
 public class BlacklistDao {
-    // Logger for logging information and errors
+    // Logger for debugging and information
     private static final Logger LOGGER = Logger.getLogger(BlacklistDao.class.getName());
-    // Database manager instance
-    private final DatabaseManager dbManager;
 
+    /**
+     * Saves a single BlacklistEntry to the database.
+     * @param entry The BlacklistEntry to save
+     */
+    public void save(BlacklistEntry entry) {
+        EntityManager em = DatabaseManager.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(entry);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            LOGGER.log(Level.SEVERE, "Error saving entry to MSSQL", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * Loads all BlacklistEntry records from the database.
+     * @return List of BlacklistEntry objects
+     */
+    @SuppressWarnings("null")
+    public List<BlacklistEntry> loadAllEntries() {
+        EntityManager em = DatabaseManager.getEntityManager();
+        try {
+            TypedQuery<BlacklistEntry> query = em.createQuery("SELECT b FROM BlacklistEntry b", BlacklistEntry.class);
+            List<BlacklistEntry> results = query.getResultList();
+            
+            LOGGER.log(Level.INFO, "Loaded {0} entries from MSSQL.", results.size());
+            return results;
+        } finally {
+            em.close();
+        }
+    }
     
     /**
-     * Constructor initializes the DatabaseManager instance.
+     * Saves a list of BlacklistEntry records to the database in a batch.
+     * @param entries List of BlacklistEntry objects to save
      */
-    public BlacklistDao() {
-        this.dbManager = new DatabaseManager();
-    }
+    public void saveAll(List<BlacklistEntry> entries) {
+        if (entries == null || entries.isEmpty())
+            return;
 
-    /**
-     * Checks if the blacklist table contains any data.
-     * @return true if database has entries, false otherwise.
-     */
-    public boolean isDatabasePopulated() {
-        String query = "SELECT COUNT(*) FROM dbo.netmonitor";
-        try (Connection conn = dbManager.getConnection();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query)) {
+        EntityManager em = DatabaseManager.getEntityManager();
+        try {
+            em.getTransaction().begin();
             
-            if (rs.next())
-                return rs.getInt(1) > 0;
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error checking database count", e);
-        }
-        return false;
-    }
-
-    /**
-     * Loads all blacklist entries from the database into memory.
-     * @return List of BlacklistEntry objects.
-     */
-    public List<BlacklistEntry> loadAllEntries() {
-        List<BlacklistEntry> entries = new ArrayList<>();
-        String query = "SELECT ID, ip_address, website_name, created_at FROM dbo.netmonitor";
-
-        try (Connection conn = dbManager.getConnection();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query)) {
-
-            while (rs.next()) {
-                BlacklistEntry entry = new BlacklistEntry(
-                    rs.getInt("ID"),
-                    rs.getString("ip_address"),
-                    rs.getString("website_name"),
-                    rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null
-                );
-                entries.add(entry);
+            for (int i = 0; i < entries.size(); i++) {
+                em.persist(entries.get(i));
+                
+                if (i > 0 && i % 50 == 0) {
+                    em.flush();
+                    em.clear();
+                }
             }
-            LOGGER.log(Level.INFO, "Loaded {0} blacklist entries from database.", entries.size());
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error loading blacklist entries", e);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            LOGGER.log(Level.SEVERE, "Error saving batch to MSSQL", e);
+        } finally {
+            em.close();
         }
-        return entries;
     }
 }

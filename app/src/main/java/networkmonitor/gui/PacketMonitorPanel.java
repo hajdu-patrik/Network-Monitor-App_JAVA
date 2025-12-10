@@ -17,17 +17,22 @@ import networkmonitor.model.PacketInfo;
  * Displays captured network packets in a scrollable table with control options.
  */
 public class PacketMonitorPanel extends JPanel {
+    // UI Components
     private JTable packetTable;
     private DefaultTableModel tableModel;
-    private boolean isCapturing = false;
     private JLabel statusLabel;
+    
+    // Transient because CaptureService is not Serializable
     private transient CaptureService captureService;
     
     /**
      * Constructs the Packet Monitor Panel.
      * @param backAction Action to perform when the "Back to Menu" button is clicked.
+     * @param sharedService The global CaptureService instance from ApplicationFrame.
      */
-    public PacketMonitorPanel(ActionListener backAction) {
+    public PacketMonitorPanel(ActionListener backAction, CaptureService sharedService) {
+        this.captureService = sharedService; // Dependency Injection
+
         setLayout(new BorderLayout());
         setBackground(ApplicationFrame.COLOR_BACKGROUND);
 
@@ -46,10 +51,10 @@ public class PacketMonitorPanel extends JPanel {
             new Color(0, 204, 102),
             30, 35
         );
-        startBtn.addActionListener(e -> startCapture());
+        startBtn.addActionListener(e -> resumeGuiUpdates());
 
         // --- RESET BUTTON (Yellow) ---
-        FlatButton resetBtn = new FlatButton("Reset", 
+        FlatButton resetBtn = new FlatButton("Clear Log", 
             new Color(255, 140, 0),
             new Color(255, 165, 0),
             30, 35
@@ -62,15 +67,15 @@ public class PacketMonitorPanel extends JPanel {
             new Color(255, 51, 51),
             30, 35
         );
-        stopBtn.addActionListener(e -> stopCapture());
+        stopBtn.addActionListener(e -> stopProtection());
 
         statusLabel = new JLabel("Status: None");
-        statusLabel.setForeground(Color.LIGHT_GRAY);
+        statusLabel.setForeground(Color.GRAY);
         statusLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
         // Adding buttons in requested order: Start -> Reset -> Stop
         leftControls.add(startBtn);
-        leftControls.add(resetBtn); // Beillesztve középre
+        leftControls.add(resetBtn); 
         leftControls.add(stopBtn);
         leftControls.add(Box.createHorizontalStrut(10));
         leftControls.add(statusLabel);
@@ -82,7 +87,7 @@ public class PacketMonitorPanel extends JPanel {
         // Default Purple Button for Back
         FlatButton backBtn = new FlatButton("Back to Menu", 30, 35);
         backBtn.addActionListener(e -> {
-            resetFullState();
+            pauseGuiUpdates(); // Pause updates to save resources
             backAction.actionPerformed(e);
         });
 
@@ -100,9 +105,6 @@ public class PacketMonitorPanel extends JPanel {
         scrollPane.getViewport().setBackground(ApplicationFrame.COLOR_BACKGROUND);
         
         add(scrollPane, BorderLayout.CENTER);
-
-        // Initialize Capture Service
-        this.captureService = new CaptureService(this::addPacketToTable);
     }
 
     /**
@@ -111,12 +113,13 @@ public class PacketMonitorPanel extends JPanel {
     private void initTable() {
         String[] columnNames = {"No.", "Time", "Source IP", "Destination IP", "Protocol", "Length", "Info", "Blocked"};
         
+        // 1. Model Definition with Types (For Correct Sorting)
         tableModel = new DefaultTableModel(columnNames, 0) {
             /**
-             * Prevents cell editing in the table.
-             * @param row The row index.
-             * @param column The column index.
-             * @return false always to make cells non-editable.
+             * Overrides to make cells non-editable and define column classes.
+             * @param row Row index
+             * @param column Column index
+             * @return false to make all cells non-editable
              */
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -124,18 +127,18 @@ public class PacketMonitorPanel extends JPanel {
             }
 
             /**
-             * Specifies the data type for each column to ensure proper sorting and rendering.
-             * @param columnIndex The index of the column.
-             * @return The Class type of the column.
+             * Defines the class type for each column to ensure proper sorting.
+             * @param columnIndex Index of the column
+             * @return Class type of the column
              */
             @Override
             public Class<?> getColumnClass(int columnIndex) {
-                if (columnIndex == 0 || columnIndex == 5) {
+                if (columnIndex == 0 || columnIndex == 5)
                     return Integer.class;
-                }
-                if (columnIndex == 7) {
+
+                if (columnIndex == 7)
                     return Boolean.class;
-                }
+
                 return String.class;
             }
         };
@@ -143,6 +146,7 @@ public class PacketMonitorPanel extends JPanel {
         packetTable = new JTable(tableModel);
         packetTable.setAutoCreateRowSorter(true);
 
+        // 3. Visual Styling (Dark Theme Base)
         packetTable.setBackground(new Color(60, 63, 65));
         packetTable.setForeground(Color.WHITE);
         packetTable.setGridColor(new Color(100, 100, 100));
@@ -152,13 +156,15 @@ public class PacketMonitorPanel extends JPanel {
 
         JTableHeader header = packetTable.getTableHeader();
         header.setBackground(new Color(45, 45, 48));
-        header.setForeground(ApplicationFrame.COLOR_PRIMARY);
+        header.setForeground(Color.WHITE);
         header.setFont(new Font("SansSerif", Font.BOLD, 13));
-        header.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, ApplicationFrame.COLOR_PRIMARY));
+        header.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Color.WHITE));
 
+        // 4. Custom Renderer for Color Coding (TCP/UDP)
         packetTable.setDefaultRenderer(Object.class, new PacketTableCellRenderer());
         packetTable.setDefaultRenderer(Integer.class, new PacketTableCellRenderer());
 
+        // 5. Column Width Optimization
         TableColumnModel columnModel = packetTable.getColumnModel();
         
         columnModel.getColumn(0).setPreferredWidth(50);
@@ -167,8 +173,8 @@ public class PacketMonitorPanel extends JPanel {
         columnModel.getColumn(1).setMaxWidth(150);
         columnModel.getColumn(2).setPreferredWidth(120);
         columnModel.getColumn(3).setPreferredWidth(120);
-        columnModel.getColumn(4).setPreferredWidth(60);
-        columnModel.getColumn(4).setMaxWidth(80);
+        columnModel.getColumn(4).setPreferredWidth(70);
+        columnModel.getColumn(4).setMaxWidth(90);
         columnModel.getColumn(5).setPreferredWidth(60);
         columnModel.getColumn(5).setMaxWidth(80);
         columnModel.getColumn(6).setPreferredWidth(300);
@@ -179,34 +185,39 @@ public class PacketMonitorPanel extends JPanel {
     }
 
     /**
-     * Starts the packet capture process.
+     * Resumes updating the GUI with packet data.
      */
-    private void startCapture() {
-        if (!isCapturing) {
-            isCapturing = true;
-            statusLabel.setText("Status: Capturing...");
-            statusLabel.setForeground(Color.GREEN);
-            
+    private void resumeGuiUpdates() {
+        if (captureService != null) {
+            captureService.setPacketListener(this::addPacketToTable);
             captureService.startCapturing();
+            statusLabel.setText("Status: Capturing");
+            statusLabel.setForeground(Color.GREEN);
         }
     }
 
     /**
-     * Stops the packet capture process.
+     * Pauses GUI updates but keeps the capture service running in background.
      */
-    private void stopCapture() {
-        if (isCapturing) {
-            isCapturing = false;
-            statusLabel.setText("Status: Stopped");
-            statusLabel.setForeground(Color.RED);
-
-            captureService.stopCapturing();
+    private void pauseGuiUpdates() {
+        if (captureService != null) {
+            captureService.setPacketListener(null);
         }
     }
 
     /**
-     * Clears the table and resets the packet counter WITHOUT stopping the capture.
-     * This is used by the "Reset" button.
+     * Completely stops the packet capture process.
+     */
+    private void stopProtection() {
+        if (captureService != null) {
+            captureService.stopCapturing();
+            statusLabel.setText("Status: None");
+            statusLabel.setForeground(Color.GRAY);
+        }
+    }
+
+    /**
+     * Clears the table and resets the packet counter.
      */
     private void clearData() {
         if (tableModel != null)
@@ -217,37 +228,15 @@ public class PacketMonitorPanel extends JPanel {
     }
 
     /**
-     * Resets the entire panel state (stops capture, clears data).
-     * This is used when navigating back to the menu.
-     */
-    private void resetFullState() {
-        if (isCapturing)
-            stopCapture();
-        
-        statusLabel.setText("Status: None");
-        statusLabel.setForeground(Color.LIGHT_GRAY);
-        
-        clearData(); // Reuse clear logic
-    }
-
-    /**
-     * Adds a captured packet to the table.
+     * Adds a captured packet to the table in a thread-safe manner.
      * @param packet The PacketInfo object containing packet details.
      */
     public void addPacketToTable(PacketInfo packet) {
-         SwingUtilities.invokeLater(() -> {
+        SwingUtilities.invokeLater(() -> {
             tableModel.addRow(new Object[]{
-                packet.getNumber(),
-                packet.getTimestamp(),
-                packet.getSourceIp(),
-                packet.getDestIp(),
-                packet.getProtocol(),
-                packet.getLength(),
-                packet.getInfo(),
-                packet.isBlocked()
+                packet.getNumber(), packet.getTimestamp(), packet.getSourceIp(), packet.getDestIp(),
+                packet.getProtocol(), packet.getLength(), packet.getInfo(), packet.isBlocked()
             });
-            // Auto-scroll logic: only if user hasn't scrolled up
-            // (Simpler version: always scroll to bottom)
             packetTable.scrollRectToVisible(packetTable.getCellRect(packetTable.getRowCount() - 1, 0, true));
         });
     }

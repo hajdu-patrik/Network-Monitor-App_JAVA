@@ -20,11 +20,17 @@ dependencies {
     implementation(libs.pcap4j.core)
     implementation(libs.pcap4j.packetfactory)
 
-    // MySQL Connector/J for database connectivity
-    implementation(libs.mssql.jdbc)
-
     // SLF4J Simple Binding for logging
     implementation(libs.slf4j.simple)
+
+    // JPA API
+    implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
+    
+    // Hibernate Core (JPA implementáció)
+    implementation("org.hibernate.orm:hibernate-core:6.4.4.Final")
+
+    // MySQL Connector/J for database connectivity
+    implementation(libs.mssql.jdbc)
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

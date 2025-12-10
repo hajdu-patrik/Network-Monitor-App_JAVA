@@ -1,50 +1,53 @@
 package networkmonitor.model;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 /**
- * Represents a blocked domain and its IP address.
- * Maps to the dbo.netmonitor database table.
+ * JPA Entity class representing a blacklist entry in the database.
+ * Maps to the "netmonitor" table by use of JPA annotations.
  */
+@Entity
+@Table(name = "netmonitor")
 public class BlacklistEntry {
+    // Primary key
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increment ID
     private int id;
+
+    @Column(name = "ip_address", nullable = false, unique = true) // Column properties
     private String ipAddress;
+
+    @Column(name = "website_name")
     private String websiteName;
+
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     /**
-     * Constructor with all fields
-     * @param id Database ID
-     * @param ipAddress Blocked IP address
-     * @param websiteName Corresponding domain name
-     * @param createdAt Timestamp of when the entry was created
+     * Default constructor required by JPA.
      */
-    public BlacklistEntry(int id, String ipAddress, String websiteName, LocalDateTime createdAt) {
-        this.id = id;
-        this.ipAddress = ipAddress;
-        this.websiteName = websiteName;
-        this.createdAt = createdAt;
-    }
+    public BlacklistEntry() {}
 
     /**
-     * Constructor without ID and createdAt
+     * Constructor to create a BlacklistEntry
      * @param ipAddress
      * @param websiteName
      */
     public BlacklistEntry(String ipAddress, String websiteName) {
         this.ipAddress = ipAddress;
         this.websiteName = websiteName;
+        this.createdAt = LocalDateTime.now(); // We set the date on the Java side
     }
 
     // Getters
-    public int getId() { return id; }
     public String getIpAddress() { return ipAddress; }
     public String getWebsiteName() { return websiteName; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 
     /**
-     * toString method for easy representation
-     * @return String representation of the BlacklistEntry
+     * String representation of the BlacklistEntry
+     * @return Formatted string with IP address and website name
      */
     @Override
     public String toString() {

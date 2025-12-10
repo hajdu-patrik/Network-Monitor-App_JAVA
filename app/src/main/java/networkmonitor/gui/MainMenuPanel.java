@@ -42,7 +42,6 @@ public class MainMenuPanel extends JPanel {
         layout.fill = GridBagConstraints.HORIZONTAL;
         layout.gridx = 0;
 
-
         // --- Title Section ---
         JLabel titleLabel = new JLabel("NETWORK MONITOR");
         titleLabel.setFont(new Font(ApplicationFrame.SANS_SERIF_FONT, Font.BOLD, 32));
@@ -61,7 +60,6 @@ public class MainMenuPanel extends JPanel {
         layout.gridy = 1;
         layout.insets = new Insets(0, 15, 40, 15);
         add(subtitleLabel, layout);
-
 
         // --- Buttons Section ---
         // Reset insets for buttons

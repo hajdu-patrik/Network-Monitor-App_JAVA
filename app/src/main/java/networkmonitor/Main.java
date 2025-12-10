@@ -16,12 +16,12 @@ public class Main {
             frame.setVisible(true);
         });
 
-        
         /**
          * Start background data synchronization tasks in a separate thread
          * to prevents the GUI from freezing during network/database operations.
          */ 
         Thread backgroundThread = new Thread(new BlacklistFetching());
+        backgroundThread.setDaemon(true); 
         backgroundThread.start();
     }
 }
