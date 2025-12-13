@@ -122,4 +122,13 @@ The project uses the Gradle Wrapper, so no manual Gradle installation is require
 ```Bash
 ./gradlew run
 ```
+
 *Note: Depending on your system security settings, you might need to run the terminal as Administrator to grant access to the network card.*
+
+---
+
+## 📦 Releases
+
+| Version | Description | Download |
+| :--- | :--- | :--- |
+| **v1.1.0** | **Network Monitor v1.1.0** - Latest stable release. Features real-time packet inspection, IPS threat detection, and persistent blacklist management via MSSQL. | [Source code (zip)](https://github.com/hajdu-patrik/Network-Monitor-App_JAVA/archive/refs/tags/v1.1.0.zip) |
