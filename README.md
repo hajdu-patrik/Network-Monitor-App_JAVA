@@ -49,7 +49,7 @@ The project features a modern **Java Swing GUI**, robust multi-threaded architec
 ---
 
 ## 🛠️ Technology Stack
-* **Language:** Java (JDK 21)
+* **Language:** Java (JDK 25)
 * **Build System:** Gradle (Kotlin DSL)
 * **GUI Framework:** Java Swing (Custom Look & Feel)
 * **Network Lib:** Pcap4J (Packet Capture)

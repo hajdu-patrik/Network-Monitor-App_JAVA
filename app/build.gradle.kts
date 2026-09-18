@@ -24,10 +24,10 @@ dependencies {
     implementation(libs.slf4j.simple)
 
     // JPA API
-    implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
+    implementation("jakarta.persistence:jakarta.persistence-api:3.2.0")
     
     // Hibernate Core (JPA implementáció)
-    implementation("org.hibernate.orm:hibernate-core:6.4.4.Final")
+    implementation("org.hibernate.orm:hibernate-core:7.4.9.Final")
 
     // MySQL Connector/J for database connectivity
     implementation(libs.mssql.jdbc)
@@ -36,7 +36,7 @@ dependencies {
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
