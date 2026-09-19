@@ -33,3 +33,6 @@ gamestate.dat
 # Database files
 *.sql
 *.db
+
+# Local database credentials (never commit)
+db.local.properties

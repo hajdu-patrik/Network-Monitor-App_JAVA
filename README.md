@@ -101,9 +101,20 @@ NetworkMonitor/
 Before running the application, ensure your local MSSQL instance is ready:
 * **Host:** `localhost:1433`
 * **Database Name:** `netmonitor`
-* **User:** `java_user`
-* **Password:** `netMonitor123.@`
 * *Note: Ensure TCP/IP is enabled in SQL Server Configuration Manager.*
+
+The app no longer ships a hardcoded login. Create your own SQL Server login (with a password of
+your choice), grant it access to the `netmonitor` database, and provide the credentials either as
+environment variables:
+* `NETMON_DB_USER`, `NETMON_DB_PASSWORD` (optionally `NETMON_DB_URL` to override the connection string)
+
+or via a local, git-ignored properties file. Copy `app/db.local.properties.example` to
+`app/db.local.properties` and fill in your login:
+```Properties
+db.user=your_sql_login
+db.password=change_me
+```
+Environment variables take precedence over `app/db.local.properties` when both are set.
 
 ### 2. Clone the Repository
 ```Bash

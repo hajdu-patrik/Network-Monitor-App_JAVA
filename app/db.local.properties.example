@@ -1,0 +1,9 @@
+# Copy this file to db.local.properties (same directory) and fill in your own SQL Server
+# login. db.local.properties is git-ignored and read from the working directory, which is
+# app/ when the application is started via `./gradlew run`.
+#
+# Environment variables NETMON_DB_URL / NETMON_DB_USER / NETMON_DB_PASSWORD take precedence
+# over these values when both are set.
+db.user=your_sql_login
+db.password=change_me
+# db.url=jdbc:sqlserver://localhost:1433;databaseName=netmonitor;encrypt=false;trustServerCertificate=true;
