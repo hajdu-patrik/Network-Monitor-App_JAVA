@@ -1,4 +1,6 @@
-![Java](https://img.shields.io/badge/Java-21%2B-ED8B00?style=flat&logo=openjdk&logoColor=white)
+# Network Monitor & IPS (Intrusion Prevention System)
+
+![Java](https://img.shields.io/badge/Java-25%2B-ED8B00?style=flat&logo=openjdk&logoColor=white)
 ![Swing](https://img.shields.io/badge/GUI-Java_Swing-E76F00?style=flat&logo=java&logoColor=white)
 ![Gradle](https://img.shields.io/badge/Build-Gradle-02303A?style=flat&logo=gradle&logoColor=white)
 ![Pcap4J](https://img.shields.io/badge/Network-Pcap4J-blue?style=flat&logo=network&logoColor=white)
@@ -7,8 +9,9 @@
 ![Hibernate](https://img.shields.io/badge/ORM-Hibernate-59666C?style=flat&logo=hibernate&logoColor=white)
 ![Architecture](https://img.shields.io/badge/Pattern-Layered_%2F_Service-purple?style=flat)
 ![Status](https://img.shields.io/badge/Status-Educational-lightgrey?style=flat)
+![License](https://img.shields.io/badge/License-All_Rights_Reserved-red?style=flat)
 
-# Network Monitor & IPS (Intrusion Prevention System)
+---
 
 ## 📋 Project Overview
 
@@ -20,7 +23,7 @@ The project features a modern **Java Swing GUI**, robust multi-threaded architec
 
 ---
 
-## 🚀 Key Features
+## ✨ Key Features
 
 ### 🛡️ Active Security (IPS)
 - **Real-time Threat Detection:** Automatically checks every outgoing packet's destination IP against a local blacklist database.
@@ -77,7 +80,7 @@ NetworkMonitor/
 │ │ ├── BlacklistEntry.java
 │ │ └── PacketInfo.java
 │ └── service/
-│ └── aptureService.java
+│ └── CaptureService.java
 |
 ├── resources/
 │ ├── META-INF/
@@ -91,9 +94,9 @@ NetworkMonitor/
 
 ---
 
-## 💻 Installation and Setup
+## ⚙️ Setup & Usage
 ### Prerequisites
-1. **Java JDK 21** (or newer) installed and configured.
+1. **Java JDK 25** (or newer) installed and configured.
 2. **Npcap (Windows)** or **libpcap (Linux)** installed.
    - **CRITICAL FOR WINDOWS USERS**: When installing Npcap, you **MUST** check the box: **"Install Npcap in WinPcap API-compatible Mode"** Without this option, the application will fail to load the native packet capture libraries.
 
@@ -118,8 +121,8 @@ Environment variables take precedence over `app/db.local.properties` when both a
 
 ### 2. Clone the Repository
 ```Bash
-git clone https://github.com/yourusername/network-monitor-app.git
-cd network-monitor-app
+git clone https://github.com/hajdu-patrik/Network-Monitor-App_JAVA.git
+cd Network-Monitor-App_JAVA
 ```
 
 ### 3. Build the Project
@@ -143,3 +146,11 @@ The project uses the Gradle Wrapper, so no manual Gradle installation is require
 | Version | Description | Download |
 | :--- | :--- | :--- |
 | **v1.1.0** | **Network Monitor v1.1.0** - Latest stable release. Features real-time packet inspection, IPS threat detection, and persistent blacklist management via MSSQL. | [Source code (zip)](https://github.com/hajdu-patrik/Network-Monitor-App_JAVA/archive/refs/tags/v1.1.0.zip) |
+
+---
+
+## 📄 License
+
+Copyright (c) Hajdú Patrik Zsolt. All rights reserved.
+
+Published for demonstration and portfolio purposes only. Using any part of this code as a solution for an academic assignment is strictly prohibited. See [LICENSE.md](LICENSE.md) for the full terms.
