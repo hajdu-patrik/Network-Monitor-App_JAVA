@@ -64,32 +64,46 @@ The project features a modern **Java Swing GUI**, robust multi-threaded architec
 ## 📂 Project Structure
 The project follows a clean **Layered Architecture** to separate concerns:
 ```
-NetworkMonitor/
-├── networkmonitor/
-│ ├── Main.java
-│ ├── db/
-│ │ ├── BlacklistDao.java
-│ │ ├── BlacklistFetching.java
-│ │ ├── BlacklistLoader.java
-│ │ └── DatabaseManager.java
-│ ├── gui/
-│ │ ├── ApplicationFrame.java
-│ │ ├── MainMenuPanel.java
-│ │ └── PacketMonitorPanel.java
-│ ├── model/
-│ │ ├── BlacklistEntry.java
-│ │ └── PacketInfo.java
-│ └── service/
-│ └── CaptureService.java
-|
-├── resources/
-│ ├── META-INF/
-│ │ └── persistence.xml
-│ ├── icon.png
-│ └── simplelogger.properties
-|
-├── blacklist_state.properties
-└── build.gradle.kts
+Network-Monitor-App_JAVA/
+├── app/
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/networkmonitor/
+│   │   │   │   ├── Main.java
+│   │   │   │   ├── db/
+│   │   │   │   │   ├── BlacklistDao.java
+│   │   │   │   │   ├── BlacklistFetching.java
+│   │   │   │   │   ├── BlacklistLoader.java
+│   │   │   │   │   ├── DatabaseConfig.java
+│   │   │   │   │   ├── DatabaseManager.java
+│   │   │   │   │   └── MissingCredentialsException.java
+│   │   │   │   ├── gui/
+│   │   │   │   │   ├── ApplicationFrame.java
+│   │   │   │   │   ├── MainMenuPanel.java
+│   │   │   │   │   └── PacketMonitorPanel.java
+│   │   │   │   ├── model/
+│   │   │   │   │   ├── BlacklistEntry.java
+│   │   │   │   │   └── PacketInfo.java
+│   │   │   │   └── service/
+│   │   │   │       └── CaptureService.java
+│   │   │   └── resources/
+│   │   │       ├── META-INF/
+│   │   │       │   └── persistence.xml
+│   │   │       ├── icon.png
+│   │   │       └── simplelogger.properties
+│   │   └── test/java/networkmonitor/db/
+│   │       └── DatabaseConfigTest.java
+│   ├── blacklist_state.properties
+│   ├── build.gradle.kts
+│   └── db.local.properties.example
+│
+├── gradle/
+│   ├── libs.versions.toml
+│   └── wrapper/
+├── gradle.properties
+├── gradlew
+├── gradlew.bat
+└── settings.gradle.kts
 ```
 
 ---
@@ -132,9 +146,14 @@ The project uses the Gradle Wrapper, so no manual Gradle installation is require
 ```
 
 ### 4. Run the Application
-**Windows (PowerShell/CMD):**
+**PowerShell / Git Bash:**
 ```Bash
 ./gradlew run
+```
+
+**Command Prompt (CMD):**
+```Bash
+gradlew run
 ```
 
 *Note: Depending on your system security settings, you might need to run the terminal as Administrator to grant access to the network card.*
